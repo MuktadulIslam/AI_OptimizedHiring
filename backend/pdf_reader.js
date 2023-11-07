@@ -38,16 +38,32 @@ async function getSkillsInfo(textDataArray) {
     let foundSkills = false;
 
     for (let i = 0; i < length && !(textDataArray[i] == 'Languages' || textDataArray[i] == 'Certifications' || textDataArray[i] == 'Honors-Awards' || textDataArray[i] == 'Experience' || textDataArray[i] == 'Education'); i++) {
-        if (textDataArray[i] == 'Top Skills') foundSkills = true;
-
         if (foundSkills) skillsInfo.push(textDataArray[i])
+        else if (textDataArray[i] == 'Top Skills') foundSkills = true;
     }
-
-    // Removing extra infomation
-    skillsInfo.pop()
 
     return skillsInfo;
 }
+
+async function getLanguageInfo(textDataArray) {
+    let length = textDataArray.length
+    let languageInfo = [];
+    let foundLaguages = false;
+
+    for (let i = 0; i < length && !(foundLaguages == true && (textDataArray[i] == 'Top Skills' || textDataArray[i] == 'Certifications' || textDataArray[i] == 'Honors-Awards' || textDataArray[i] == 'Experience' || textDataArray[i] == 'Education')) ; i++) {
+        if (foundLaguages) languageInfo.push(textDataArray[i])
+        else if (textDataArray[i] == 'Languages') foundLaguages = true;
+    }
+
+    // Remove data inside parentheses using regular expression
+    const modifiedStrings = languageInfo.map(str => str.replace(/\(.*\)/g, ''));
+
+    // Remove extra spaces from the beginning and end of each string
+    const trimmedStrings = modifiedStrings.map(str => str.trim());
+
+    return trimmedStrings;
+}
+
 
 
 async function getInformationFromPDF(pdfBuffer) {
@@ -58,6 +74,9 @@ async function getInformationFromPDF(pdfBuffer) {
 
     const skillsInfo = await getSkillsInfo(textDataArray)
     console.log(skillsInfo)
+
+    const languageInfo = await getLanguageInfo(textDataArray)
+    console.log(languageInfo)
 }
 
 module.exports = {
